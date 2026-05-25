@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -25,19 +26,21 @@ color:white;
 overflow-x:hidden;
 }
 
-/* SOLO LEVELING BACKGROUND */
+/* BACKGROUND */
 
 body::before{
 content:"";
 position:fixed;
 inset:0;
 background:
-linear-gradient(rgba(5,1,13,0.92),rgba(5,1,13,0.96)),
+linear-gradient(rgba(5,1,13,0.94),rgba(5,1,13,0.97)),
 url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1920&auto=format&fit=crop');
 background-size:cover;
 background-position:center;
 z-index:-3;
 }
+
+/* GLOWS */
 
 .glow1{
 position:fixed;
@@ -95,7 +98,7 @@ pointer-events:none;
 filter:blur(1px);
 }
 
-/* ANIMATIONS */
+/* FLOAT */
 
 @keyframes float{
 0%{transform:translateY(0px);}
@@ -107,10 +110,14 @@ filter:blur(1px);
 animation:float 3s ease-in-out infinite;
 }
 
+/* QUEST */
+
 .quest:hover{
 transform:scale(1.01);
 border-color:#a855f7;
 }
+
+/* PROGRESS */
 
 .progress{
 transition:1s;
@@ -162,7 +169,8 @@ Shadow Monarch System Activated
 <div class="text-right">
 
 <p class="text-2xl font-black text-violet-400">
-ENERGY: <span id="energyText">0</span>
+ENERGY:
+<span id="energyText">0/600</span>
 </p>
 
 <p class="text-gray-400 mt-2">
@@ -185,7 +193,7 @@ style="width:0%">
 
 </div>
 
-<!-- SYSTEM NOTICE -->
+<!-- NOTICE -->
 
 <div class="card rounded-3xl p-6 mb-10">
 
@@ -195,8 +203,8 @@ SYSTEM NOTICE
 
 <p class="text-gray-300 mt-4 leading-8">
 Every completed mission increases your evolution energy.
-Locked levels will unlock only after mastering the previous arc.
-Continue evolving until the Shadow Monarch awakens.
+Failure weakens the system.
+Unlock new worlds by conquering previous arcs.
 </p>
 
 </div>
@@ -217,6 +225,8 @@ Rise • Grind • Evolve
 
 const weekDays = ["Mon","Tue","Wed","Thu","Fri","Sat"];
 
+const MAX_ENERGY = 600;
+
 const levels = [
 
 {
@@ -228,6 +238,7 @@ main:[
 ],
 
 side:[
+{name:"Diet",xp:10},
 {name:"Face Exercise",xp:10},
 {name:"Skin Care",xp:10},
 {name:"7K Steps",xp:10},
@@ -244,6 +255,7 @@ main:[
 ],
 
 side:[
+{name:"Diet",xp:10},
 {name:"10K Steps",xp:10},
 {name:"Boxing Skill Training 4x Week",xp:10},
 {name:"Face Exercise",xp:10},
@@ -260,6 +272,7 @@ main:[
 ],
 
 side:[
+{name:"Diet",xp:10},
 {name:"10K Steps",xp:10},
 {name:"Boxing 6x Week",xp:10},
 {name:"Run / Jog",xp:10}
@@ -275,6 +288,7 @@ main:[
 ],
 
 side:[
+{name:"Diet",xp:10},
 {name:"Book Reading",xp:10},
 {name:"Topic Learning",xp:10}
 ]
@@ -295,11 +309,15 @@ let completed = 0;
 
 [...previous.main,...previous.side].forEach((q,i)=>{
 
-const id = `level${index-1}quest${i}`;
+const mainId = `level${index-1}quest${i}`;
+const sideId = `level${index-1}side${i}`;
 
 total++;
 
-if(localStorage.getItem(id)==="true"){
+if(
+localStorage.getItem(mainId)==="true" ||
+localStorage.getItem(sideId)==="true"
+){
 completed++;
 }
 
@@ -323,20 +341,20 @@ let html = `
 
 ${!unlocked ? `
 
-<div class="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+<div class="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex items-center justify-center">
 
 <div class="text-center">
 
-<div class="text-6xl mb-4 float">
-🔒
+<div class="text-7xl mb-4 float">
+🐉
 </div>
 
 <p class="text-3xl font-black text-violet-300">
-LEVEL LOCKED
+DRAGON WORLD SEALED
 </p>
 
 <p class="text-gray-400 mt-3">
-Complete previous arc to unlock
+Conquer previous arc to survive this realm
 </p>
 
 </div>
@@ -381,8 +399,6 @@ ${level.reward}
 
 </div>
 
-<!-- ENERGY CARD -->
-
 <div class="bg-gradient-to-r from-violet-900/30 to-black border border-violet-500/20 rounded-2xl p-5 mb-7">
 
 <div class="flex items-center justify-between">
@@ -390,11 +406,11 @@ ${level.reward}
 <div>
 
 <p class="text-violet-300 font-bold text-xl">
-SYSTEM ENERGY
+SHADOW ENERGY
 </p>
 
 <p class="text-gray-400 text-sm mt-1">
-Daily growth increases hunter potential
+Failure weakens the monarch system
 </p>
 
 </div>
@@ -407,7 +423,21 @@ Daily growth increases hunter potential
 
 </div>
 
-<!-- MAIN QUESTS -->
+<div class="bg-red-900/20 border border-red-500/20 rounded-2xl p-5 mb-8">
+
+<h3 class="text-red-400 text-xl font-black mb-3">
+SYSTEM PENALTIES
+</h3>
+
+<div class="space-y-2 text-gray-300">
+
+<p>❌ Diet Not Done = -50 ENERGY</p>
+
+<p>❌ Main Quest Failed = -60 ENERGY</p>
+
+</div>
+
+</div>
 
 <h3 class="text-2xl font-black text-violet-300 mb-5">
 MAIN QUESTS
@@ -452,8 +482,6 @@ onchange="toggleQuest('${id}')">
 html += `
 
 </div>
-
-<!-- SIDE QUESTS -->
 
 <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
 
@@ -531,30 +559,50 @@ renderLevels();
 
 function updateProgress(){
 
-let total = 0;
-let earned = 0;
+let energy = 0;
 
 levels.forEach((level,index)=>{
 
-[...level.main,...level.side].forEach((q,i)=>{
+level.main.forEach((q,i)=>{
 
-const mainId = `level${index}quest${i}`;
-const sideId = `level${index}side${i}`;
+const id = `level${index}quest${i}`;
 
-total += q.xp;
+if(localStorage.getItem(id)==="true"){
+energy += q.xp;
+}else{
+energy -= 60;
+}
 
-if(localStorage.getItem(mainId)==="true" || localStorage.getItem(sideId)==="true"){
-earned += q.xp;
+});
+
+level.side.forEach((q,i)=>{
+
+const id = `level${index}side${i}`;
+
+if(localStorage.getItem(id)==="true"){
+energy += q.xp;
+}
+
+if(q.name==="Diet" && localStorage.getItem(id)!=="true"){
+energy -= 50;
 }
 
 });
 
 });
 
-const percent = Math.round((earned/total)*100)||0;
+if(energy < 0){
+energy = 0;
+}
+
+if(energy > MAX_ENERGY){
+energy = MAX_ENERGY;
+}
+
+const percent = Math.round((energy / MAX_ENERGY) * 100);
 
 document.getElementById("energyText").innerText =
-`${earned}/${total}`;
+`${energy}/${MAX_ENERGY}`;
 
 document.getElementById("percentText").innerText =
 `${percent}%`;
