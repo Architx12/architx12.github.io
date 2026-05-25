@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ARCHIT LEVELING JOURNEY</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Cinzel',serif;
+background:#05010d;
+color:white;
+overflow-x:hidden;
+}
+
+/* SOLO LEVELING BACKGROUND */
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+linear-gradient(rgba(5,1,13,0.92),rgba(5,1,13,0.96)),
+url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1920&auto=format&fit=crop');
+background-size:cover;
+background-position:center;
+z-index:-3;
+}
+
+.glow1{
+position:fixed;
+width:500px;
+height:500px;
+background:#7e22ce;
+filter:blur(140px);
+opacity:0.25;
+top:-120px;
+left:-120px;
+z-index:-2;
+}
+
+.glow2{
+position:fixed;
+width:500px;
+height:500px;
+background:#9333ea;
+filter:blur(140px);
+opacity:0.25;
+bottom:-120px;
+right:-120px;
+z-index:-2;
+}
+
+/* CARD */
+
+.card{
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(14px);
+border:1px solid rgba(168,85,247,0.2);
+box-shadow:0 0 25px rgba(168,85,247,0.12);
+}
+
+/* GLOW TEXT */
+
+.glow-text{
+text-shadow:0 0 18px rgba(168,85,247,0.8);
+}
+
+/* CHECKBOX */
+
+input[type="checkbox"]{
+width:24px;
+height:24px;
+accent-color:#a855f7;
+cursor:pointer;
+}
+
+/* LOCKED */
+
+.locked{
+opacity:0.45;
+pointer-events:none;
+filter:blur(1px);
+}
+
+/* ANIMATIONS */
+
+@keyframes float{
+0%{transform:translateY(0px);}
+50%{transform:translateY(-8px);}
+100%{transform:translateY(0px);}
+}
+
+.float{
+animation:float 3s ease-in-out infinite;
+}
+
+.quest:hover{
+transform:scale(1.01);
+border-color:#a855f7;
+}
+
+.progress{
+transition:1s;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="glow1"></div>
+<div class="glow2"></div>
+
+<div class="max-w-7xl mx-auto px-5 py-10">
+
+<!-- HEADER -->
+
+<div class="text-center mb-12">
+
+<h1 class="text-4xl md:text-7xl font-black uppercase tracking-[0.2em] text-violet-400 glow-text">
+ARCHIT LEVELING JOURNEY
+</h1>
+
+<p class="text-gray-400 mt-5 text-lg tracking-[0.2em]">
+ARISE • EVOLVE • CONQUER
+</p>
+
+</div>
+
+<!-- STATUS -->
+
+<div class="card rounded-3xl p-7 mb-10">
+
+<div class="flex flex-wrap items-center justify-between gap-5">
+
+<div>
+
+<h2 class="text-3xl font-black text-violet-300">
+SHADOW SYSTEM
+</h2>
+
+<p class="text-gray-400 mt-2">
+Shadow Monarch System Activated
+</p>
+
+</div>
+
+<div class="text-right">
+
+<p class="text-2xl font-black text-violet-400">
+ENERGY: <span id="energyText">0</span>
+</p>
+
+<p class="text-gray-400 mt-2">
+Evolution Progress:
+<span id="percentText">0%</span>
+</p>
+
+</div>
+
+</div>
+
+<div class="w-full h-7 bg-black rounded-full overflow-hidden mt-6 border border-violet-500/30">
+
+<div id="progressBar"
+class="progress h-full rounded-full bg-gradient-to-r from-violet-500 to-purple-700"
+style="width:0%">
+</div>
+
+</div>
+
+</div>
+
+<!-- SYSTEM NOTICE -->
+
+<div class="card rounded-3xl p-6 mb-10">
+
+<h2 class="text-2xl md:text-3xl font-black text-violet-300 tracking-widest">
+SYSTEM NOTICE
+</h2>
+
+<p class="text-gray-300 mt-4 leading-8">
+Every completed mission increases your evolution energy.
+Locked levels will unlock only after mastering the previous arc.
+Continue evolving until the Shadow Monarch awakens.
+</p>
+
+</div>
+
+<!-- LEVELS -->
+
+<div id="levelsContainer"></div>
+
+<!-- FOOTER -->
+
+<div class="text-center mt-16 text-gray-500 uppercase tracking-[0.4em] text-sm">
+Rise • Grind • Evolve
+</div>
+
+</div>
+
+<script>
+
+const weekDays = ["Mon","Tue","Wed","Thu","Fri","Sat"];
+
+const levels = [
+
+{
+title:"Awakening Arc",
+reward:"70% Body Fit",
+
+main:[
+{name:"Gym",xp:20}
+],
+
+side:[
+{name:"Face Exercise",xp:10},
+{name:"Skin Care",xp:10},
+{name:"7K Steps",xp:10},
+{name:"Run / Jog",xp:10}
+]
+},
+
+{
+title:"Shadow Discipline Arc",
+reward:"Enhanced Conditioning + Boxing Skill",
+
+main:[
+{name:"Gym",xp:20}
+],
+
+side:[
+{name:"10K Steps",xp:10},
+{name:"Boxing Skill Training 4x Week",xp:10},
+{name:"Face Exercise",xp:10},
+{name:"Skin Care",xp:10}
+]
+},
+
+{
+title:"Combat Evolution Arc",
+reward:"Shadow Combat Upgrade",
+
+main:[
+{name:"Gym",xp:20}
+],
+
+side:[
+{name:"10K Steps",xp:10},
+{name:"Boxing 6x Week",xp:10},
+{name:"Run / Jog",xp:10}
+]
+},
+
+{
+title:"Shadow Intelligence Arc",
+reward:"Mind Expansion",
+
+main:[
+{name:"Gym",xp:20}
+],
+
+side:[
+{name:"Book Reading",xp:10},
+{name:"Topic Learning",xp:10}
+]
+}
+
+];
+
+const container = document.getElementById("levelsContainer");
+
+function isLevelUnlocked(index){
+
+if(index===0) return true;
+
+const previous = levels[index-1];
+
+let total = 0;
+let completed = 0;
+
+[...previous.main,...previous.side].forEach((q,i)=>{
+
+const id = `level${index-1}quest${i}`;
+
+total++;
+
+if(localStorage.getItem(id)==="true"){
+completed++;
+}
+
+});
+
+return completed === total;
+
+}
+
+function renderLevels(){
+
+container.innerHTML="";
+
+levels.forEach((level,index)=>{
+
+const unlocked = isLevelUnlocked(index);
+
+let html = `
+
+<div class="card rounded-3xl p-7 mb-8 relative overflow-hidden ${!unlocked ? 'locked' : ''}">
+
+${!unlocked ? `
+
+<div class="absolute inset-0 z-20 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+
+<div class="text-center">
+
+<div class="text-6xl mb-4 float">
+🔒
+</div>
+
+<p class="text-3xl font-black text-violet-300">
+LEVEL LOCKED
+</p>
+
+<p class="text-gray-400 mt-3">
+Complete previous arc to unlock
+</p>
+
+</div>
+
+</div>
+
+` : ''}
+
+<div class="flex flex-wrap items-center justify-between gap-5 mb-8">
+
+<div>
+
+<h2 class="text-3xl font-black uppercase text-violet-300 tracking-wide glow-text">
+LEVEL ${index+1} — ${level.title}
+</h2>
+
+<div class="flex flex-wrap gap-2 mt-4">
+
+${weekDays.map(day=>`
+
+<div class="bg-violet-900/30 border border-violet-500/20 px-3 py-1 rounded-xl text-sm text-violet-200">
+${day}
+</div>
+
+`).join('')}
+
+</div>
+
+</div>
+
+<div class="bg-violet-500/10 border border-violet-500/30 rounded-2xl px-5 py-4">
+
+<p class="text-violet-300 font-bold">
+REWARD
+</p>
+
+<p class="text-white mt-1">
+${level.reward}
+</p>
+
+</div>
+
+</div>
+
+<!-- ENERGY CARD -->
+
+<div class="bg-gradient-to-r from-violet-900/30 to-black border border-violet-500/20 rounded-2xl p-5 mb-7">
+
+<div class="flex items-center justify-between">
+
+<div>
+
+<p class="text-violet-300 font-bold text-xl">
+SYSTEM ENERGY
+</p>
+
+<p class="text-gray-400 text-sm mt-1">
+Daily growth increases hunter potential
+</p>
+
+</div>
+
+<div class="text-4xl float">
+⚡
+</div>
+
+</div>
+
+</div>
+
+<!-- MAIN QUESTS -->
+
+<h3 class="text-2xl font-black text-violet-300 mb-5">
+MAIN QUESTS
+</h3>
+
+<div class="space-y-4 mb-8">
+
+`;
+
+level.main.forEach((quest,i)=>{
+
+const id = `level${index}quest${i}`;
+
+const checked = localStorage.getItem(id)==="true";
+
+html += `
+
+<div class="quest transition-all duration-300 bg-black/40 border border-violet-500/20 rounded-2xl p-5 flex items-center justify-between">
+
+<div>
+
+<p class="text-xl font-bold">
+${quest.name}
+</p>
+
+<p class="text-gray-500 mt-1">
++${quest.xp} ENERGY
+</p>
+
+</div>
+
+<input type="checkbox"
+${checked ? "checked" : ""}
+onchange="toggleQuest('${id}')">
+
+</div>
+
+`;
+
+});
+
+html += `
+
+</div>
+
+<!-- SIDE QUESTS -->
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+
+<h3 class="text-2xl font-black text-violet-300">
+SIDE QUESTS
+</h3>
+
+<div class="bg-orange-500/10 border border-orange-500/30 px-4 py-2 rounded-xl text-orange-300 text-sm">
+Cheat Meal Every 2 Weeks
+</div>
+
+</div>
+
+<div class="grid md:grid-cols-2 gap-4">
+
+`;
+
+level.side.forEach((quest,i)=>{
+
+const id = `level${index}side${i}`;
+
+const checked = localStorage.getItem(id)==="true";
+
+html += `
+
+<div class="quest transition-all duration-300 bg-black/40 border border-violet-500/20 rounded-2xl p-5 flex items-center justify-between">
+
+<div>
+
+<p class="text-lg font-bold">
+${quest.name}
+</p>
+
+<p class="text-gray-500 mt-1">
++${quest.xp} ENERGY
+</p>
+
+</div>
+
+<input type="checkbox"
+${checked ? "checked" : ""}
+onchange="toggleQuest('${id}')">
+
+</div>
+
+`;
+
+});
+
+html += `
+
+</div>
+
+</div>
+
+`;
+
+container.innerHTML += html;
+
+});
+
+updateProgress();
+
+}
+
+function toggleQuest(id){
+
+const current = localStorage.getItem(id)==="true";
+
+localStorage.setItem(id,!current);
+
+renderLevels();
+
+}
+
+function updateProgress(){
+
+let total = 0;
+let earned = 0;
+
+levels.forEach((level,index)=>{
+
+[...level.main,...level.side].forEach((q,i)=>{
+
+const mainId = `level${index}quest${i}`;
+const sideId = `level${index}side${i}`;
+
+total += q.xp;
+
+if(localStorage.getItem(mainId)==="true" || localStorage.getItem(sideId)==="true"){
+earned += q.xp;
+}
+
+});
+
+});
+
+const percent = Math.round((earned/total)*100)||0;
+
+document.getElementById("energyText").innerText =
+`${earned}/${total}`;
+
+document.getElementById("percentText").innerText =
+`${percent}%`;
+
+document.getElementById("progressBar").style.width =
+`${percent}%`;
+
+}
+
+renderLevels();
+
+</script>
+
+</body>
+</html>
